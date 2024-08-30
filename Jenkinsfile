@@ -73,15 +73,20 @@ pipeline {
         }
     }
     post {
-        always {
-            echo 'Pipeline completed.'
+        success {
+            mail to: 'developer@example.com',
+                 subject: "Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.JOB_NAME} #${env.BUILD_NUMBER} was successful.\n\nBuild Details:\n${env.BUILD_URL}"
+        }
+        failure {
+            mail to: 'developer@example.com',
+                 subject: "Pipeline Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.JOB_NAME} #${env.BUILD_NUMBER} failed.\n\nBuild Details:\n${env.BUILD_URL}\n\nCheck the Jenkins build logs for more information."
+        }
+        unstable {
+            mail to: 'developer@example.com',
+                 subject: "Pipeline Unstable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.JOB_NAME} #${env.BUILD_NUMBER} is unstable.\n\nBuild Details:\n${env.BUILD_URL}\n\nCheck the Jenkins build logs for more information."
         }
     }
-}
-
-def sendEmailNotification(stageName) {
-    mail to: 'developer@example.com',
-         subject: "${stageName} Stage: ${currentBuild.currentResult}",
-         body: "The ${stageName} stage completed with status: ${currentBuild.currentResult}.",
-         attachLog: true
 }
